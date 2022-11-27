@@ -1,0 +1,59 @@
+//
+//  File:
+//  AEexampleTemplate.mel
+//
+//  Description Name:
+//  Example Attribute Editor template using python and PySide/PyQt widgets.
+//
+//  Author:
+//  David De Juan
+//
+
+
+global proc AEexampleTemplate(string $nodeName){
+    
+    //make sure the python Qt module is loaded
+    python("import sys");
+    //modify with the template name
+    string $pathFile = `whatIs "AEexampleTemplate"`;
+    python("sys.path.append('/'+'/'.join('"+$pathFile+"'.split('/')[1:-1]))");
+    //Import the python module
+    python("import AEexampleTemplate");
+
+    //START TEMPLATE
+    editorTemplate -beginScrollLayout;
+
+    //CUSTOM ATTRIBUTES
+    editorTemplate -beginLayout "Example Attributes" -collapse false;
+    editorTemplate -callCustom "AEexampleTemplate_customAttr" "AEexampleTemplate_customAttr" "";
+    editorTemplate -endLayout;
+
+    //SUPRESS ATTRIBUTES
+    string $attList[] = `listAttr $nodeName`;
+    string $keepAttList[] = {"caching", "nodeState"};
+
+    string $removeAttList[] = stringArrayRemove($keepAttList, $attList);
+    for ($att in $removeAttList){
+        editorTemplate -suppress $att;
+    }
+
+    editorTemplate -addExtraControls;
+
+    //END
+    editorTemplate -endScrollLayout;
+
+}
+
+
+global proc AEexampleTemplate_customAttr(string $nodeName){
+    
+    //When the $nodeName is passed in, there will be a dot at the end
+    //Remove it
+    $nodeName = python("'"+$nodeName+"'.rstrip('.')");
+
+    //Get the current layout
+    string $parent = `setParent -q`;
+
+    //Pass the layout and node name to que Qt build/create cmd
+    python("AEexampleTemplate.ExampleAttributesUI('" + $parent + "', '" + $nodeName + "')");
+}
