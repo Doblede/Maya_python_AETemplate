@@ -39,7 +39,7 @@ class AttributesTemplateUI(QtWidgets.QWidget):
         layoutPtr = shiboken2.wrapInstance(long(layoutPtr), QtWidgets.QWidget)
         parentLayout = layoutObj.findChild(QtWidgets.QBoxLayout)
 
-        #Remove ani widget from the layout
+        #Remove any widget from the layout
         for index in reversed(range(parentLayout.count())):
             parentLayout.itemAt(index).widget().deleteLater()
 
